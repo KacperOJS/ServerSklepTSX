@@ -10,6 +10,12 @@ const PORT = 3001;
 app.use(cors());
 app.use(bodyParser.json());
 
+
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+const fsPromises = require('fs').promises
+
 const dataFilePath = path.join(__dirname, 'data.json');
 
 // Function to read data from the JSON file
@@ -28,6 +34,22 @@ const writeData = (data) => {
 };
 
 let dataObjects = readData();
+const handleLogin = async (req,res)=>{
+	const {username,password}=req.body;
+
+	const FindUsername = dataObjects.find((obj) => obj.username ===username)
+	const accessToken = jwt.sign(
+		{"username": FindUsername},
+		process.env.ACCESS_TOKEN_SECRET,
+		{expiresIn:'50s'}
+	);
+	const refreshToken = jwt.sign(
+		{"username": FindUsername},
+		process.env.REFRESH_TOKEN_SECRET,
+		{expiresIn:'1d'}
+	);
+
+}
 
 app.post('/api/data', (req, res) => {
   const newData = req.body;
@@ -51,10 +73,9 @@ app.delete('/api/data/:index', (req, res) => {
 
   if (index >= 0 && index < dataObjects.length) {
     dataObjects.splice(index, 1);
-
-    writeData(dataObjects);
-
+    writeData(dataObjects);	
     res.json({ success: true });
+
   } else {
     res.status(404).json({ success: false, message: 'Object not found' });
   }
