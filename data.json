@@ -1,17 +1,19 @@
 [
   {
-    "username": "Kacper",
-    "password": "abc123",
-    "email": "kacper@gmail.com"
+    "username": "Bartosz",
+    "password": "daniek",
+    "email": "daniek@gmail.com"
   },
   {
     "username": "kacper",
     "password": "abc",
-    "email": "abc@gmail.com"
+    "email": "abc@gmail.com",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImthY3BlciIsImlhdCI6MTY5MzUwMDI2MiwiZXhwIjoxNjkzNTg2NjYyfQ.ZpXzfhp4Xls4ieIq7vRkcIL5TEpe1NQTX8qz2SpG3Uw"
   },
   {
-    "username": "Bartosz",
-    "password": "daniek",
-    "email": "daniek@gmail.com"
+    "username": "Kacper",
+    "password": "abc123",
+    "email": "kacper@gmail.com",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkthY3BlciIsImlhdCI6MTY5MzUwMDExNiwiZXhwIjoxNjkzNTg2NTE2fQ.8ivJPEznYVZc5NrFFI7fgKEj-Em_3DND223P7pA9jmc"
   }
 ]

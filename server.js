@@ -3,9 +3,16 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-
+const UsersDB ={
+	users:require('./data.json'),
+	setUsers:function(data){
+		this.users=data;
+	}
+}
 const app = express();
 const PORT = 3001;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -34,22 +41,46 @@ const writeData = (data) => {
 };
 
 let dataObjects = readData();
-const handleLogin = async (req,res)=>{
-	const {username,password}=req.body;
-
-	const FindUsername = dataObjects.find((obj) => obj.username ===username)
-	const accessToken = jwt.sign(
-		{"username": FindUsername},
+const handleLogin = async (req, res) => {
+	const { username, password } = req.body;
+	const finduser = UsersDB.users.find(
+	  (person) => person.username === username && person.password === password
+	);
+  
+	if (!finduser) {
+	  return res.status(401).json({ error: 'Invalid credentials' });
+	}
+  
+	try {
+	  const accessToken = jwt.sign(
+		{ username: finduser.username },
 		process.env.ACCESS_TOKEN_SECRET,
-		{expiresIn:'50s'}
-	);
-	const refreshToken = jwt.sign(
-		{"username": FindUsername},
+		{ expiresIn: '30s' }
+	  );
+  
+	  const refreshToken = jwt.sign(
+		{ username: finduser.username },
 		process.env.REFRESH_TOKEN_SECRET,
-		{expiresIn:'1d'}
-	);
-
-}
+		{ expiresIn: '1d' }
+	  );
+  
+	  // Update the user's refreshToken
+	  const updatedUsers = UsersDB.users.map((person) =>
+		person.username === username ? { ...person, refreshToken } : person
+	  );
+	  UsersDB.setUsers(updatedUsers);
+  
+	  // Write updated users data to file
+	  writeData(updatedUsers);
+  
+	  res.json({ accessToken });
+	} catch (err) {
+	  console.error(err);
+	  res.status(500).json({ error: 'Internal server error' });
+	}
+  };
+  
+  app.post('/login', handleLogin);
 
 app.post('/api/data', (req, res) => {
   const newData = req.body;
