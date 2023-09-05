@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 
 
 const jwt = require('jsonwebtoken');
+const { log } = require('console');
 
 require('dotenv').config();
 const fsPromises = require('fs').promises
@@ -80,6 +81,23 @@ const handleLogin = async (req, res) => {
 	}
   };
   
+  const getallUsers = async (req,res)=> {
+		const users = await UsersDB.users.map((user)=>{
+			const u=user;
+			return (`${u.username} ${u.password} ${u.email}`);
+
+		})
+	
+		// If no users 
+		if (!users?.length) {
+			return res.status(400).json({ message: 'No users found' })
+		}
+	
+		res.json(users)
+	
+  }
+
+app.get('/userinfos',getallUsers)  
   app.post('/login', handleLogin);
 
 app.post('/api/data', (req, res) => {
