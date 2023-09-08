@@ -96,8 +96,30 @@ const handleLogin = async (req, res) => {
 		res.json(users)
 	
   }
-
-app.get('/userinfos',getallUsers)  
+ // Define a middleware function to check if the user has the "admin" role
+ const isAdmin = async(req, res, next) => {
+	try {
+	  // Assuming you have already parsed the user's data from JSON
+	  const user = UsersDB.users.find((person) => person.role === 3001);
+  
+	  if (user) {
+		req.user = user; // Attach user information to the request object
+		next(); // Continue to the next middleware or route
+	  } else {
+		res.status(403).json({ error: 'Forbidden - You are not an admin' });
+	  }
+	} catch (err) {
+	  res.status(401).json({ error: 'Unauthorized' });
+	}
+  };
+  
+  // Modify your AdminPanelManagement route to use the isAdmin middleware
+  app.get('/adminpanel', isAdmin, (req, res) => {
+	// If the user reaches this point, they have the "admin" role
+	res.json({ message: 'Welcome to the admin panel!', user: req.user });
+  });
+  
+app.get('/userinfos',getallUsers);
   app.post('/login', handleLogin);
 
 app.post('/api/data', (req, res) => {
